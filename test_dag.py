@@ -133,6 +133,8 @@ with DAG(
     extracted_data = extract(["AAPL", "GOOGL"], "/opt/airflow/dags/stocks.csv")
     create_tbl = create_table()
     inserted_data = populate_table_via_stage(table, file_path)
+    
+    extracted_data >> create_tbl >> inserted_data
 
 with DAG(
     dag_id = 'ml_dag',
@@ -152,3 +154,5 @@ with DAG(
     conn = return_snowflake_conn()
     ml_train = train(table, view, func_name)
     ml_predict = predict(func_name, table, stock_tbl, stock_final_tbl)
+    
+    ml_train >> ml_predict
